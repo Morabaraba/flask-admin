@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from wtforms import validators
 
 import flask_admin as admin
+from flask_admin import expose
 from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import filters
 
@@ -30,6 +31,7 @@ class User(db.Model):
     last_name = db.Column(db.String(100))
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
+    data = db.Column(db.String(9999), unique=True)
 
     def __str__(self):
         return self.username
@@ -97,7 +99,11 @@ def index():
 # Customized User model admin
 class UserAdmin(sqla.ModelView):
     inline_models = (UserInfo,)
-
+    
+    edit_template = 'json-editor.html'
+    form_widget_args = {
+        'data' : {  'data-role': 'json-editor', 'style': 'display: none', 'data-schema': '/static/user-data.json'},
+    }
 
 # Customized Post model admin
 class PostAdmin(sqla.ModelView):
@@ -269,4 +275,4 @@ if __name__ == '__main__':
         build_sample_db()
 
     # Start app
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=8020)
